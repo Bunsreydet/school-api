@@ -22,19 +22,58 @@ export const createStudent = async (req, res) => {
  *   get:
  *     summary: Get all students
  *     tags: [Students]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10 }
+ *         description: Number of items per page
+ *       - in: query
+ *         name: sort
+ *         schema: { type: string, enum: [asc, desc], default: asc }
+ *         description: Sort data by ascending (asc) or descending (desc) order
+ *       - in: query
+ *         name: include
+ *         schema:
+ *          type: string
+ *          example: "courses"
+ *         description: Comma-separated list of relations to populate (students, courses)
  *     responses:
  *       200:
  *         description: List of students
  */
 export const getAllStudents = async (req, res) => {
-    try {
-        const students = await db.Student.findAll({ include: db.Course });
-        res.json(students);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const total = await db.Student.count();
+  const sort = (req.query.Sort || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+  let include = [];
+  if (req.query.include) {
+    const includes = req.query.include
+      .split(",")
+      .map((i) => i.trim().toLowerCase());
+    if (includes.includes("courses")) include.push(db.Course);
+  }
+  try {
+    const student = await db.Student.findAll({
+      include: include.length > 0 ? include : undefined,
+      limit: limit,
+      offset: (page - 1) * limit,
+      order: [["id", sort]],
+    });
+    res.json({
+      total: total,
+      page: page,
+      data: student,
+      totPages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
-
 /**
  * @swagger
  * /students/{id}:

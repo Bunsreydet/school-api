@@ -38,25 +38,67 @@ export const createTeacher = async (req, res) => {
     }
 };
 
+
 /**
  * @swagger
  * /teachers:
  *   get:
  *     summary: Get all teachers
  *     tags: [Teachers]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10 }
+ *         description: Number of items per page
+ *       - in: query
+ *         name: sort
+ *         schema: { type: string, enum: [asc, desc], default: asc }
+ *         description: Sort data by ascending (asc) or descending (desc) order
+ *       - in: query
+ *         name: include
+ *         schema:
+ *          type: string
+ *          example: "courses"
+ *         description: Comma-separated list of relations to populate (courses)
  *     responses:
  *       200:
  *         description: List of teachers
  */
 export const getAllTeachers = async (req, res) => {
-    try {
-        const teachers = await db.Teacher.findAll({ include: db.Course });
-        res.json(teachers);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const total = await db.Teacher.count();
+  const sort =
+    (req.query.sort || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+  let include = [];
+  if (req.query.include) {
+    const includes = req.query.include
+      .split(",")
+      .map((i) => i.trim().toLowerCase());
+    if (includes.includes("courses")) include.push(db.Course);
+  }
 
+  try {
+    const teacher = await db.Teacher.findAll({
+      include: include.length > 0 ? include : undefined,
+      limit: limit,
+      offset: (page - 1) * limit,
+      order: [["id", sort]],
+    });
+    res.json({
+      total: total,
+      page: page,
+      data: teacher,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 /**
  * @swagger
  * /teachers/{id}:

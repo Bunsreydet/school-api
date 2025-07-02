@@ -55,37 +55,50 @@ export const createCourse = async (req, res) => {
  *         name: limit
  *         schema: { type: integer, default: 10 }
  *         description: Number of items per page
+ *       - in: query
+ *         name: sort
+ *         schema: { type: string, enum: [asc, desc], default: asc }
+ *         description: Sort data by ascending (asc) or descending (desc) order
+  *       - in: query
+ *         name: include
+ *         schema:
+ *          type: string
+ *          example: "students,teachers"
+ *         description: Comma-separated list of relations to populate (courses)
  *     responses:
  *       200:
  *         description: List of courses
  */
 export const getAllCourses = async (req, res) => {
-
-    // take certain amount at a time
-    const limit = parseInt(req.query.limit) || 10;
-    // which page to take
-    const page = parseInt(req.query.page) || 1;
-
-    const total = await db.Course.count();
-
-    try {
-        const courses = await db.Course.findAll(
-            {
-                // include: [db.Student, db.Teacher],
-                limit: limit, offset: (page - 1) * limit
-            }
-        );
-        res.json({
-            meta: {
-                totalItems: total,
-                page: page,
-                totalPages: Math.ceil(total / limit),
-            },
-            data: courses,
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const sort =
+    (req.query.sort || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+  const total = await db.Course.count();
+  let include = [];
+  if (req.query.include) {
+    const includes = req.query.include
+        .split(",")
+        .map((i) => i.trim().toLowerCase());
+    if (includes.includes("students")) include.push(db.Student);
+    if (includes.includes("teachers")) include.push(db.Teacher);
+  }
+  try {
+    const course = await db.Course.findAll({
+      include: include.length > 0 ? include : undefined,
+      limit: limit,
+      offset: (page - 1) * limit,
+      order: [["id", sort]],
+    });
+    res.json({
+      total: total,
+      page: page,
+      data: course,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 /**
