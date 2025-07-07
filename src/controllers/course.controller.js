@@ -13,6 +13,8 @@ import db from '../models/index.js';
  *   post:
  *     summary: Create a new course
  *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -30,6 +32,10 @@ import db from '../models/index.js';
  *     responses:
  *       201:
  *         description: Course created
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
  */
 export const createCourse = async (req, res) => {
     try {
@@ -46,6 +52,8 @@ export const createCourse = async (req, res) => {
  *   get:
  *     summary: Get all courses
  *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -58,22 +66,15 @@ export const createCourse = async (req, res) => {
  *     responses:
  *       200:
  *         description: List of courses
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
  */
 export const getAllCourses = async (req, res) => {
-<<<<<<< HEAD
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const total = await db.Course.count();
-=======
-
-    // take certain amount at a time
-    const limit = parseInt(req.query.limit) || 10;
-    // which page to take
-    const page = parseInt(req.query.page) || 1;
-
-    const total = await db.Course.count();
-
->>>>>>> f89c5a6d72e9cb2cce30578d9d72936fa4ed2cde
     try {
         const courses = await db.Course.findAll(
             {
@@ -82,7 +83,6 @@ export const getAllCourses = async (req, res) => {
             }
         );
         res.json({
-<<<<<<< HEAD
             total: total,
             page: page,
             data: courses,
@@ -99,15 +99,6 @@ export const getAllCourses = async (req, res) => {
  * /courses/{id}:
  *   get:
  *     summary: Get a course by ID
-=======
-            meta: {
-                totalItems: total,
-                page: page,
-                totalPages: Math.ceil(total / limit),
-            },
-            data: courses,
-        });
->>>>>>> f89c5a6d72e9cb2cce30578d9d72936fa4ed2cde
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

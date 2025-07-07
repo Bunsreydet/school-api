@@ -13,6 +13,8 @@ import db from '../models/index.js';
  *   post:
  *     summary: Create a new teacher
  *     tags: [Teachers]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -28,6 +30,10 @@ import db from '../models/index.js';
  *     responses:
  *       201:
  *         description: Teacher created
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
  */
 export const createTeacher = async (req, res) => {
     try {
@@ -44,6 +50,8 @@ export const createTeacher = async (req, res) => {
  *   get:
  *     summary: Get all teachers
  *     tags: [Teachers]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -56,6 +64,10 @@ export const createTeacher = async (req, res) => {
  *     responses:
  *       200:
  *         description: List of teachers
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
  */
 export const getAllTeachers = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;

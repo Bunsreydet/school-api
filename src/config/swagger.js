@@ -7,8 +7,29 @@ const options = {
         info: {
             title: 'School API',
             version: '1.0.0',
-            description: 'API for managing students, courses, and teachers',
+            description: 'API for managing students, courses, and teachers with JWT authentication',
         },
+        servers: [
+            {
+                url: 'http://localhost:3000',
+                description: 'Development server',
+            },
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'Enter JWT token (without Bearer prefix)',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
     apis: ['**/controllers/*.js'],
 };

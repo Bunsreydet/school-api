@@ -6,8 +6,12 @@ import {
     updateStudent,
     deleteStudent
 } from '../controllers/student.controller.js';
+import { authenticateToken } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
+
+// Apply JWT authentication to all student routes
+router.use(authenticateToken);
 
 router.post('/', createStudent);
 router.get('/', getAllStudents);
