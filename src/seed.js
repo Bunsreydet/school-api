@@ -4,9 +4,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+<<<<<<< HEAD
 const NUM_TEACHERS = 50; // Not used, but can be useful for future seeding
 const NUM_COURSES = 100; // Not used, but can be useful for future seeding
 const NUM_STUDENTS = 200; // Not used, but can be useful for future seeding
+=======
+const NUM_TEACHERS = 50;
+const NUM_COURSES = 100;
+const NUM_STUDENTS = 2000;
+>>>>>>> f89c5a6d72e9cb2cce30578d9d72936fa4ed2cde
 
 async function seed() {
     try {

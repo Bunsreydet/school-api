@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # School Management API
 
 This is a RESTful API built using **Express.js**, **Sequelize ORM**, and **MySQL** to manage Students, Courses, and Teachers. It includes full CRUD operations, Swagger API documentation, and a Faker-based database seeder.
@@ -132,3 +133,6 @@ It includes all CRUD endpoints for:
 ## 📄 License
 
 MIT
+=======
+# school_apiweek9
+>>>>>>> f89c5a6d72e9cb2cce30578d9d72936fa4ed2cde
