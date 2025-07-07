@@ -7,6 +7,30 @@ import db from '../models/index.js';
  *   description: Student management
  */
 
+/**
+ * @swagger
+ * /students:
+ *   post:
+ *     summary: Create a new student
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Student created
+ */
 export const createStudent = async (req, res) => {
     try {
         const student = await db.Student.create(req.body);
@@ -22,14 +46,35 @@ export const createStudent = async (req, res) => {
  *   get:
  *     summary: Get all students
  *     tags: [Students]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10 }
+ *         description: Number of items per page
  *     responses:
  *       200:
  *         description: List of students
  */
 export const getAllStudents = async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const total = await db.Student.count();
     try {
-        const students = await db.Student.findAll({ include: db.Course });
-        res.json(students);
+        const students = await db.Student.findAll({
+            include: [db.Course],
+            limit: limit,
+            offset: (page - 1) * limit
+        });
+        res.json({
+            total: total,
+            page: page,
+            data: students,
+            totalPages: Math.ceil(total / limit),
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
