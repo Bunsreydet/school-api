@@ -173,8 +173,6 @@ export const loginTeacher = async (req, res) => {
  *   post:
  *     summary: Create a new teacher
  *     tags: [Teachers]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -190,19 +188,12 @@ export const loginTeacher = async (req, res) => {
  *     responses:
  *       201:
  *         description: Teacher created
-<<<<<<< HEAD
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Teacher'
  *       500:
  *         description: Server error
-=======
- *       401:
- *         description: Access token is required
- *       403:
- *         description: Invalid or expired token
->>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
  */
 export const createTeacher = async (req, res) => {
     try {
@@ -219,7 +210,6 @@ export const createTeacher = async (req, res) => {
  *   get:
  *     summary: Get all teachers
  *     tags: [Teachers]
-<<<<<<< HEAD
  *     parameters:
  *       - in: query
  *         name: limit
@@ -286,31 +276,10 @@ export const createTeacher = async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
-=======
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: page
- *         schema: { type: integer, default: 1 }
- *         description: Page number
- *       - in: query
- *         name: limit
- *         schema: { type: integer, default: 10 }
- *         description: Number of items per page
- *     responses:
- *       200:
- *         description: List of teachers
- *       401:
- *         description: Access token is required
- *       403:
- *         description: Invalid or expired token
->>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
  */
 export const getAllTeachers = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
-<<<<<<< HEAD
     const sort = req.query.sort ? req.query.sort.toUpperCase() : 'ASC';
     const populate = req.query.populate ? req.query.populate.split(',') : [];
 
@@ -349,20 +318,6 @@ export const getAllTeachers = async (req, res) => {
                 limit: limit,
                 totalPages: Math.ceil(total / limit)
             }
-=======
-    const total = await db.Teacher.count();
-    try {
-        const teachers = await db.Teacher.findAll({
-            include: [db.Course],
-            limit: limit,
-            offset: (page - 1) * limit
-        });
-        res.json({
-            total: total,
-            page: page,
-            data: teachers,
-            totalPages: Math.ceil(total / limit),
->>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
