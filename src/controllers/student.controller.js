@@ -12,12 +12,18 @@ import db from '../models/index.js';
  *   post:
  *     summary: Create a new student
  *     tags: [Students]
+<<<<<<< HEAD
+=======
+ *     security:
+ *       - bearerAuth: []
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+<<<<<<< HEAD
  *             required: [title, description, TeacherId]
  *             properties:
  *               title:
@@ -25,16 +31,32 @@ import db from '../models/index.js';
  *               description:
  *                 type: string
  *               TeacherId:
+=======
+ *             required: [name, email]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               age:
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
  *                 type: integer
  *     responses:
  *       201:
  *         description: Student created
+<<<<<<< HEAD
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Student'
  *       500:
  *         description: Server error
+=======
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
  */
 export const createStudent = async (req, res) => {
     try {
@@ -51,6 +73,11 @@ export const createStudent = async (req, res) => {
  *   get:
  *     summary: Get all students
  *     tags: [Students]
+<<<<<<< HEAD
+=======
+ *     security:
+ *       - bearerAuth: []
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
  *     parameters:
  *       - in: query
  *         name: page
@@ -60,6 +87,7 @@ export const createStudent = async (req, res) => {
  *         name: limit
  *         schema: { type: integer, default: 10 }
  *         description: Number of items per page
+<<<<<<< HEAD
  *       - in: query
  *         name: sort
  *         schema:
@@ -100,10 +128,20 @@ export const createStudent = async (req, res) => {
  *         description: Invalid query parameters
  *       500:
  *         description: Server error
+=======
+ *     responses:
+ *       200:
+ *         description: List of students
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
  */
 export const getAllStudents = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
+<<<<<<< HEAD
     const sort = req.query.sort ? req.query.sort.toUpperCase() : 'ASC';
     const populate = req.query.populate ? req.query.populate.split(',') : [];
 
@@ -151,6 +189,20 @@ export const getAllStudents = async (req, res) => {
                 limit: limit,
                 totalPages: Math.ceil(total / limit),
             },
+=======
+    const total = await db.Student.count();
+    try {
+        const students = await db.Student.findAll({
+            include: [db.Course],
+            limit: limit,
+            offset: (page - 1) * limit
+        });
+        res.json({
+            total: total,
+            page: page,
+            data: students,
+            totalPages: Math.ceil(total / limit),
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

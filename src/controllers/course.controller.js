@@ -13,6 +13,8 @@ import db from '../models/index.js';
  *   post:
  *     summary: Create a new course
  *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -30,6 +32,10 @@ import db from '../models/index.js';
  *     responses:
  *       201:
  *         description: Course created
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
  */
 export const createCourse = async (req, res) => {
     try {
@@ -46,6 +52,8 @@ export const createCourse = async (req, res) => {
  *   get:
  *     summary: Get all courses
  *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -58,13 +66,15 @@ export const createCourse = async (req, res) => {
  *     responses:
  *       200:
  *         description: List of courses
+ *       401:
+ *         description: Access token is required
+ *       403:
+ *         description: Invalid or expired token
  */
 export const getAllCourses = async (req, res) => {
-
-    // take certain amount at a time
     const limit = parseInt(req.query.limit) || 10;
-    // which page to take
     const page = parseInt(req.query.page) || 1;
+<<<<<<< HEAD
     const sort = req.query.sort ? req.query.sort.toUpperCase() : 'ASC';
     const total = await db.Course.count();
     const populate = req.query.populate ? req.query.populate.split(',') : [];
@@ -81,6 +91,9 @@ export const getAllCourses = async (req, res) => {
     if (populate.includes('studentIds')){
         include.push({ model: db.Student, as: 'Students' });
     }
+=======
+    const total = await db.Course.count();
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
     try {
         const total = await db.Course.count();
         const courses = await db.Course.findAll(
@@ -92,14 +105,31 @@ export const getAllCourses = async (req, res) => {
             }
         );
         res.json({
+<<<<<<< HEAD
             meta: {
                 totalItems: total,
                 page: page,
                 limit: limit,
                 totalPages: Math.ceil(total / limit),
             },
+=======
+            total: total,
+            page: page,
+>>>>>>> 7ac09cf4b3452f388a78f1c7cea41858bd05fea0
             data: courses,
+            totalPages: Math.ceil(total / limit),
         });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+/**
+ * @swagger
+ * /courses/{id}:
+ *   get:
+ *     summary: Get a course by ID
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
