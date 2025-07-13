@@ -8,6 +8,8 @@ import {
 } from '../controllers/student.controller.js';
 
 const router = express.Router();
+router.use(validation);
+
 
 router.post('/', createStudent);
 router.get('/', getAllStudents);

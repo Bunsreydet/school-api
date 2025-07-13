@@ -4,10 +4,21 @@ import {
     getAllTeachers,
     getTeacherById,
     updateTeacher,
-    deleteTeacher
+    deleteTeacher,
+    registerTeacher,
+    loginTeacher
 } from '../controllers/teacher.controller.js';
-
+import validation from '../middleware/validation.js';
 const router = express.Router();
+
+router.post('/register', registerTeacher);
+router.post('/login', loginTeacher);
+
+router.use(validation); // Apply validation middleware to all routes below  
+
+router.get('/checkTeacherAuth', (req, res) => {
+    res.json({ success: true, user: req.user });
+});
 
 router.post('/', createTeacher);
 router.get('/', getAllTeachers);

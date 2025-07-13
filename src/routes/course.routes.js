@@ -9,6 +9,8 @@ import {
 
 const router = express.Router();
 
+router.use(validation);
+
 router.post('/', createCourse);
 router.get('/', getAllCourses);
 router.get('/:id', getCourseById);
